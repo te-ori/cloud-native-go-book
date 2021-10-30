@@ -2,12 +2,47 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
+
+func init() {
+	initializeTransactionLog()
+}
+
+var logger TransactionLogger
+
+func initializeTransactionLog() error {
+	var err error
+
+	logger, err = NewFileTransactionLogger("transaction.log")
+	if err != nil {
+		return fmt.Errorf("failed to  create event logger: %w", err)
+	}
+
+	events, errors := logger.ReadEvents()
+	e, ok := Event{}, true
+
+	for ok && err == nil {
+		select {
+		case err, ok = <-errors:
+		case e, ok = <-events:
+			switch e.EventType {
+			case EventDelete:
+				err = Delete(e.Key)
+			case EventPut:
+				err = Put(e.Key, e.Value)
+			}
+		}
+	}
+
+	logger.Run()
+	return err
+}
 
 func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -38,6 +73,7 @@ func keyValuePutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	logger.WritePut(key, string(value))
 	w.WriteHeader(http.StatusCreated)
 	log.Printf("PUT key=%s value=%s\n", key, string(value))
 }
@@ -71,6 +107,7 @@ func keyValueDeleteHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	logger.WriteDelete(key)
 	log.Printf("DELETE key=%s\n", key)
 }
 
