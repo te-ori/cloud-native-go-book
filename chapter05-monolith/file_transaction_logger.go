@@ -77,7 +77,9 @@ func (l *FileTransactionLogger) ReadEvents() (<-chan Event, <-chan error) {
 	go func() {
 		var e Event
 
-		defer close(outEvent) // Close the channels when the
+		defer func() {
+			close(outEvent) // Close the channels when the
+		}()
 		defer close(outError) // goroutine ends
 
 		for scanner.Scan() {

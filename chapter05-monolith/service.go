@@ -123,5 +123,5 @@ func handleKeyValueStore() { // Create a new mux router
 	r.HandleFunc("/v1", notAllowedHandler)
 	r.HandleFunc("/v1/{key}", notAllowedHandler)
 
-	log.Fatal(http.ListenAndServe(":8080", r))
+	log.Fatal(http.ListenAndServeTLS(":8080", "example-cert.pem", "example-key.pem", r))
 }
