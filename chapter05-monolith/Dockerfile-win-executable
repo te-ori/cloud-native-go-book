@@ -1,0 +1,13 @@
+FROM mcr.microsoft.com/windows/nanoserver:ltsc2022
+
+SHELL ["powershell"]
+
+COPY kvs.exe ./
+
+COPY *.pem ./
+
+COPY transaction.log ./
+
+EXPOSE 8080
+
+ENTRYPOINT ["kvs"]

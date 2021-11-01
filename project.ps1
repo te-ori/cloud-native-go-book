@@ -1,7 +1,7 @@
 $mainGitHubUrl="https://github.com/cloud-native-go/examples"
 Write-Host "PROJECT helpers loaded"
 
-$keyValueStoreBaseUrl = "http://127.0.0.1:8080/v1/"
+$keyValueStoreBaseUrl = "https://127.0.0.1:8080/v1/"
 
 function Generate-RandomString {
     param(
