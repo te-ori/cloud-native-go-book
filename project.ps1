@@ -2,6 +2,11 @@ $mainGitHubUrl="https://github.com/cloud-native-go/examples"
 Write-Host "PROJECT helpers loaded"
 
 $keyValueStoreBaseUrl = "https://127.0.0.1:8080/v1/"
+function Open-Github {
+    $browserPath = GET-DefaultBrowserPath
+    
+    Start-Process $browserPath -ArgumentList $mainGitHubUrl
+}
 
 function Generate-RandomString {
     param(
